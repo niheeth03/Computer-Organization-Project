@@ -86,49 +86,116 @@ Memory_iter = 0
 Memory_label = {}
 
 
+def pre_process_data(i,lines):
+    #print("In data section")
+    i += 1
+    while i < len(lines):
+
+        lines[i] = lines[i].strip()
+        # Process data segment until .text is seen
+        if re.findall(r"^\.text", lines[i]):
+            i -= 1
+            #print("Exiting data section")
+            #print("i", i)
+            return i
+        if re.findall(r"^\.globl", lines[i]):
+            continue
+
+        # Process labels
+        if lines[i][0] != '.':
+            #print(lines[i])
+            s = lines[i].split(sep=':', maxsplit=1)  # new line after label for .word
+            lines[i] = s[1].strip()
+
+            s = s[0].strip()
+            global Memory_iter
+            Memory_label[s] = Memory_iter
+
+        # Process int values
+        if re.findall(r"^\.word", lines[i]):
+            print(lines[i])
+            line = lines[i][6:]
+            # line = re.sub(r',', '', line)
+            line = line.split(sep=',')  # rm spaces for array
+            for l in line:
+                l = l.strip()
+                Memory.append(int(l))
+                Memory_iter += 1
+
+        # Process strings
+        elif re.findall(r"^\.asciiz", lines[i]):
+            #print(lines[i])
+            line = lines[i][9:len(lines[i]) - 1]
+            line = re.sub(r"\\n", "\n", line)
+            line = re.sub(r"\\t", "\t", line)
+            Memory.append(line)
+            Memory_iter += 1
+
+        else:
+            SyntaxError.error(i)
+            return
+        i += 1
+    return i
+
+def pre_process_text(i,lines):
+    ProgramCounter=i
+    #print("In text section")
+    while i < len(lines):
+        #print(i)
+
+        pos = lines[i].find('#')
+        if re.findall(r"^\.data", lines[i]):
+            i=i-1
+            break
+        if re.findall(r"^\.globl",lines[i]):
+            i=i+1
+            continue
+        if pos >= 0:
+            j = pos
+            while lines[i][j - 1] == ' ':
+                j -= 1
+            lines[i] = lines[i][:j]
+        i += 1
+
+    #print("Processed labels")
+
+    i = ProgramCounter
+    while i < len(lines):
+        lines[i]=lines[i].strip()
+        if re.findall(r"^\.data", lines[i]):
+            i=i-1
+            return i
+        if re.findall(r"^\w*:", lines[i]):
+            label_name = lines[i].split(sep=":", maxsplit=1)[0].strip()
+            labelnames[label_name] = i
+
+        i += 1
+    return i
+
+
 def DataProcess():
     Memory.clear()
     i = 0
     while i < len(lines):
+        # .data
+        lines[i] = lines[i].strip()
+        print(lines[i])
         if re.search(r"^\.data", lines[i]):
-            while True:
-                i += 1
-                if re.findall(r"^\.text", lines[i]):
-                    i -= 1
-                    break
-                if lines[i][0] != '.':
-                    s = lines[i].split(sep=':', maxsplit=1)
-                    lines[i] = s[1].strip()
-                    s = s[0].strip()
-                    global Memory_iter
-                    Memory_label[s] = Memory_iter
-                
-                if re.findall(r"^\.asciiz", lines[i]):
-                    line = lines[i][9:len(lines[i]) - 1]
-                    line = re.sub(r"\\n", "\n", line)
-                    line = re.sub(r"\\t", "\t", line)
-                    Memory.append(line)
-                    Memory_iter += 1
-
-                elif re.findall(r"^\.word", lines[i]):
-                    line = lines[i][6:]
-                    line = line.split(sep=',')
-                    for l in line:
-                        l = l.strip()
-                        Memory.append(int(l))
-                        Memory_iter += 1
-                else:
-                    SyntaxError.error(i)
-                    return
-        if re.findall(r"^\.globl", lines[i]):
-            i += 1
-            break
-
-        i += 1
+            i = pre_process_data(i, lines)
+        elif re.findall(r"^\.globl", lines[i]):
+            i = i + 1
+            continue
+        elif re.findall(r"^\.text", lines[i]):
+            i = pre_process_text(i, lines)
+        i = i + 1
 
     print("Initial Memory:\n", Memory)
+    print("=" * 100)
+    Reg["ra"] = len(lines)
     global ProgramCounter
-    ProgramCounter = i
+    ProgramCounter = labelnames["main"]
+
+
 
 global labelnames
 labelnames={}
