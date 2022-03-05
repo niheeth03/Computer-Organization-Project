@@ -142,19 +142,13 @@ def pre_process_text(i,lines):
     #print("In text section")
     while i < len(lines):
         #print(i)
-
-        pos = lines[i].find('#')
         if re.findall(r"^\.data", lines[i]):
             i=i-1
             break
         if re.findall(r"^\.globl",lines[i]):
             i=i+1
             continue
-        if pos >= 0:
-            j = pos
-            while lines[i][j - 1] == ' ':
-                j -= 1
-            lines[i] = lines[i][:j]
+        
         i += 1
 
     #print("Processed labels")
