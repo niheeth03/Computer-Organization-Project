@@ -9,15 +9,10 @@ RISCify FEATURES:
 
 Our simulator supports the following RISC-V instructions 
           add
-          
           sub
-          
           bne
-          
           beq
-          
           lw
-          
           sw
           lui
           j
