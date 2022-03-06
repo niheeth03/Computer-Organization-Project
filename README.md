@@ -8,8 +8,8 @@ RISCify is a simulator that is built using python runs programs of the RISC-V ar
 RISCify FEATURES:
 
 Our simulator supports the following RISC-V instructions 
+
           add
-          
           sub
           bne
           beq
