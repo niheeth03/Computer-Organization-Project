@@ -1,4 +1,4 @@
-﻿# Computer-Organization-Project
+﻿# RISCify
 ABSTRACT:
 RISCify is a simulator that is built using python runs programs of the RISC-V architecture. RISCify can read and execute files containing assembly language. RISCify is a self-contained system for running these programs and contains a debugger and interface. Simulators are a useful tool for studying computers and programs that run on them. Because these are implemented in software, they Can be easily modified to add new instructions.
               RISC-V architecture is simple and regular, which makes it easy to learn and understand. The processor contains 32 general purpose registers and a well-designed instruction set that make it a propitious target for generating code in a compiler.
