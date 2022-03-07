@@ -39,3 +39,7 @@ Simulator supports 4KB of Memory.
 Simulator reads a .fsm file, analyzes it, executes it and print all the contents in the memory and registers.
 
 It is software developed, so that it is easily modifiable, low budget, easy to carry simulator.
+
+Output for Bubble Sort Program
+![2022-03-07](https://user-images.githubusercontent.com/88976098/156969671-554fd885-6a8b-44e3-a8c2-3b6e5ee7a595.png)
+
