@@ -1,0 +1,58 @@
+.data
+arr: .word 80, 50, 70, 30, 20, 45, 60, 10, 0, 90, 55, 25
+  space: .asciiz " "
+  .text
+  .globl main
+
+main:
+  lui s0, 0x1001                   
+  li t0, 0                        
+  li t1, 0                         
+  li s1, 11                       
+  li s2, 11                        
+  add t2, zero, s0               
+  add t3, zero, s0            
+
+  addi s1, s1, -1
+
+oloop:
+  li  t1, 0                       
+  addi s2, s2, -1                 
+  add t3, zero, s0               
+
+  iloop:
+    lw s3, 0(t3)                 
+    addi t3, t3, 4               
+    lw s4, 0(t3)                 
+    addi t1, t1, 1                
+
+    slt t4, s3, s4              
+    bne t4, zero, cond
+    swap:
+      sw s3, 0(t3)
+      sw s4, -4(t3)
+      lw s4, 0(t3)
+
+    cond:
+      bne t1, s2, iloop      
+
+    addi t0, t0, 1                  
+  bne t0, s1, oloop           
+
+  li t0, 0
+  addi s1, s1, 1
+ploop:
+  li a7, 1
+  lw a0, 0(t2)
+  ecall
+  li a7, 4
+  la a0, space
+  ecall
+
+  addi t2, t2, 4                  
+  addi t0, t0, 1                  
+  bne t0, s1, ploop          
+
+exit:
+  li a7, 10
+  ecall
